@@ -18,16 +18,16 @@ if(getChannels.length <1) {
 
 
 
-//  useEffect( ()=>{{
-//          return(showChannels())
+  useEffect( ()=>{{
+          return(showChannels())
 
-//  }})
+  }})
     
 function showChannels() {
 fetch('http://localhost:81/getChannels')
          .then(response => response.json())
          .then(response => setChannels(Object.values(response)))
-console.log(getChannels)
+//console.log(getChannels)
 }
 
 
@@ -51,42 +51,56 @@ console.log(getChannels)
 // return channels
 //}
 
+// var channels = []
+// getChannels.map(channel =>
+//   channels.concat(channel))
+// console.log(channels)
+// channels.map(c => console.log(c))
+
+const routeComponents = getChannels.map((channel) => <Route exact path={`channels/${channel.name}`} component={<Channel name={channel.name} id={channel.id}></Channel>} key={channel.id} />);
+
   
   return (
     <div className="App">
       <header className="App-header">
 
         <div>
-          {getChannels.map(channel => 
+          {getChannels.map((channel) => {
+            //console.log(channel)
+            return (
           <div className="container">
 
           <Router>
           
-          <Link to={`/channels/${channel.name}`} >  <button>  {channel.name} </button> </Link>
+          <Link key={channel.id} to={`/channels/${channel.name}`} >  {channel.name} </Link>
           
           <Routes>
-          <Route path={`/channels/${channel.name}` } element={<Channel id={channel.id} name={channel.name}/>} />
+          <Route path={`/channels/${channel.name}` } key={channel.id} element={<Channel id={channel.id} name={channel.name}/>} />
             
           </Routes>
           </Router>
-          </div>)}
+          </div>)})}
           </div>
        
         <div>
           <Router>
           <Link to='/createChannel'>  <button>  Create a New Channel </button>   </Link>
+          <Link key={20} to={`/channels/${"a"}`} >  {"a"} </Link>
+
           
 
          <Routes>
           <Route exact path='/' element={<Landing/>} />
             <Route path='/createChannel' element={<CreateChannel set={setChannels}/>} />
+            <Route path={`/channels/${"a"}`} key={20} element={<Channel id={20} name={"a"}/>} />
+
             
           </Routes>
         </Router>
 
         </div>
 
-      <ol className='channelList'>{showChannels()}</ol>
+     
       </header>
     </div>
   );

@@ -38,8 +38,7 @@ app.post('/init', (req, res) =>
 });
 
 connection.query(`CREATE TABLE IF NOT EXISTS channels 
-( id int unsigned NOT NULL auto_increment, name VARCHAR(150) NOT NULL
-PRIMARY KEY (id)
+( id int unsigned NOT NULL auto_increment, name VARCHAR(150) NOT NULL, PRIMARY KEY (id)
 )`, function(error,result) {
   if (error) console.log(error);
   res.json(result);
@@ -48,17 +47,18 @@ PRIMARY KEY (id)
 
   })
 
+// to create a new channel
 app.post('/createChannel', (req, res) =>
 {
   var name = req.body.name;
 
-  connection.use('USE postdb', function (error, results)
+  connection.query('USE postsdb', function (error, results)
   {
       if (error) console.log(error);
   });
 
-  connection.query(`CREATE IF NOT EXISTS (name)('${name}') 
-  (id int unsigned NOT NULL autoincrement, data VARCHAR(300) NOT NULL, reply_to int unsigned)`)
+  //connection.query(`CREATE TABLE IF NOT EXISTS ${name}, 
+  //( id int unsigned NOT NULL auto_increment, data VARCHAR(300) NOT NULL, replyTo int unsigned, PRIMARY KEY (id))`)
 
   connection.query('USE channeldb', function(error, results)
   {
@@ -75,17 +75,69 @@ app.post('/createChannel', (req, res) =>
   });
 })
 
+// to list all the channels
 app.get('/getChannels', (req, res)=>{
   connection.query('USE channeldb', function(error, results)
   {
       if (error) console.log(error);
   });
-  const sql = `SELECT * FROM channel`;
+  const sql = `SELECT * FROM channels`;
   connection.query(sql, function (err, result) {
     if (err) throw err;
     res.json(result);
     });
 })
+
+app.post('/addPost', (req, res)=>
+  {
+    console.log('called addPost');
+    var channel_id = req.body.channelID;
+    var data = req.body.data;
+
+    connection.query('USE postdb', function(error, results)
+    {
+        if (error) console.log(error);
+    });
+
+    // create a table for the channel for all posts
+  connection.query(`CREATE TABLE IF NOT EXISTS posts ( id int unsigned NOT NULL auto_increment, data VARCHAR(300) NOT NULL, replyid int, channelid int NOT NULL, PRIMARY KEY (id))`,
+  function(error,result) {
+    if (error) console.log(error);
+  
+  });
+
+  // later will have add reply method to create a table for the reply
+
+
+
+    var query = `INSERT INTO posts (data, channelid) VALUES ('${data}', ${channel_id})`;
+    console.log('post added');
+
+    connection.query(query, function(error, results)
+    {
+      if (error) console.log(error)
+      res.json(results);
+      
+    });
+  });
+
+  app.get('/getPosts/:channelid', (req, res) =>
+  {
+      var channel_id = req.params.channelid
+      connection.query('USE postdb', function(error, results)
+  {
+      if (error) console.log(error);
+  });
+  const sql = `select * from posts where channelid = ${channel_id};`;
+  connection.query(sql, function (err, result) {
+    if (err) throw err;
+    res.json(result);
+    });
+
+  })
+
+
+
 
 
 app.listen(PORT, HOST);
