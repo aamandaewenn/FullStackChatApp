@@ -136,6 +136,29 @@ app.post('/addPost', (req, res)=>
 
   })
 
+  app.post('/addReply', (req, res)=>
+  {
+    console.log('called addReply');
+    var channel_id = req.body.channelID;
+    var data = req.body.data;
+    var post_id = req.body.postID;
+
+    connection.query('USE postdb', function(error, results)
+    {
+        if (error) console.log(error);
+    });
+
+
+    var query = `INSERT INTO posts (data, channelid, replyid) VALUES ('${data}', ${channel_id}, ${post_id})`;
+    console.log('post added');
+
+    connection.query(query, function(error, results)
+    {
+      if (error) console.log(error)
+      res.json(results);
+      
+    });
+  });
 
 
 
