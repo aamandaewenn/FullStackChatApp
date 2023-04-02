@@ -160,6 +160,22 @@ app.post('/addPost', (req, res)=>
     });
   });
 
+  app.get('/getReplies/:channelid/:postid', (req, res) =>
+  {
+      var channel_id = req.params.channelid
+      var replyTo = req.params.postid
+      connection.query('USE postdb', function(error, results)
+  {
+      if (error) console.log(error);
+  });
+  const sql = `select * from posts where replyid = ${replyTo};`;
+  connection.query(sql, function (err, result) {
+    if (err) throw err;
+    res.json(result);
+    });
+
+  })
+
 
 
 
