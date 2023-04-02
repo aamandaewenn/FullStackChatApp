@@ -30,7 +30,8 @@ fetch('http://localhost:81/getChannels')
 //console.log(getChannels)
 }
 
-
+function goToChannel()
+{}
 //   const channels = getChannels.map(post => (
    
   
@@ -64,36 +65,20 @@ const routeComponents = getChannels.map((channel) => <Route exact path={`channel
     <div className="App">
       <header className="App-header">
 
-        <div>
-          {getChannels.map((channel) => {
-            //console.log(channel)
-            return (
-          <div className="container">
-
-          <Router>
-          
-          <Link key={channel.id} to={`/channels/${channel.name}`} >  {channel.name} </Link>
-          
-          <Routes>
-          <Route path={`/channels/${channel.name}` } key={channel.id} element={<Channel id={channel.id} name={channel.name}/>} />
-            
-          </Routes>
-          </Router>
-          </div>)})}
-          </div>
        
-        <div>
+        <div id='channelList'>
           <Router>
+          {getChannels.map((channel) => {return (<Link key={channel.id} to={`/channels/${channel.name}`} >  {channel.name} </Link>)})}
           <Link to='/createChannel'>  <button>  Create a New Channel </button>   </Link>
-          <Link key={20} to={`/channels/${"a"}`} >  {"a"} </Link>
 
           
 
          <Routes>
+         {getChannels.map((channel) => {return (<Route path={`/channels/${channel.name}`} element={<Channel id={channel.id} name={channel.name}></Channel>} >  {channel.name} </Route>)})}
+
+
           <Route exact path='/' element={<Landing/>} />
             <Route path='/createChannel' element={<CreateChannel set={setChannels}/>} />
-            <Route path={`/channels/${"a"}`} key={20} element={<Channel id={20} name={"a"}/>} />
-
             
           </Routes>
         </Router>
