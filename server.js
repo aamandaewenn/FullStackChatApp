@@ -100,7 +100,8 @@ app.post('/addPost', (req, res)=>
     });
 
     // create a table for the channel for all posts
-  connection.query(`CREATE TABLE IF NOT EXISTS posts ( id int unsigned NOT NULL auto_increment, data VARCHAR(300) NOT NULL, replyid int, channelid int NOT NULL, PRIMARY KEY (id))`,
+    query =
+  connection.query(`CREATE TABLE IF NOT EXISTS posts ( id int unsigned NOT NULL auto_increment, data VARCHAR(300) NOT NULL, replyid int, channelid int NOT NULL, rating int, PRIMARY KEY (id))`,
   function(error,result) {
     if (error) console.log(error);
   
@@ -110,7 +111,7 @@ app.post('/addPost', (req, res)=>
 
 
 
-    var query = `INSERT INTO posts (data, channelid) VALUES ('${data}', ${channel_id})`;
+    var query = `INSERT INTO posts (data, channelid, rating) VALUES ('${data}', ${channel_id}, ${0})`;
     console.log('post added');
 
     connection.query(query, function(error, results)
@@ -149,7 +150,7 @@ app.post('/addPost', (req, res)=>
     });
 
 
-    var query = `INSERT INTO posts (data, channelid, replyid) VALUES ('${data}', ${channel_id}, ${post_id})`;
+    var query = `INSERT INTO posts (data, channelid, replyid, rating) VALUES ('${data}', ${channel_id}, ${post_id}, ${0})`;
     console.log('post added');
 
     connection.query(query, function(error, results)
@@ -176,6 +177,25 @@ app.post('/addPost', (req, res)=>
 
   })
 
+  app.post('/updateRating', (req, res)=>
+  {
+    console.log('update rating called')
+    var post_id = req.body.postID;
+    var rating = req.body.rating;
+    console.log(rating)
+
+    connection.query('USE postdb', function(error, results)
+    {
+        if (error) console.log(error);
+    });
+
+    var query = `UPDATE posts SET rating = ${rating} WHERE id = ${post_id}`
+    connection.query(query, function(error, results)
+    {
+        if (error) console.log(error);
+    });
+
+  })
 
 
 

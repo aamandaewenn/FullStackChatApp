@@ -14,7 +14,7 @@ return (
     <div> All Posts</div>
     {get.map((post) => (
     post.replyid == null
-      ? (<Post id={post.id} data={post.data} channel_id={post.channelid} />)
+      ? (<Post id={post.id} data={post.data} channel_id={post.channelid} rating={post.rating} />)
       : null
   ))}
         
