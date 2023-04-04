@@ -19,6 +19,9 @@ export const CreateChannel = ({set}) => {
                     method: 'POST', body: `name=${getName}`,
                     headers: { 'Content-type': 'application/x-www-form-urlencoded' }
                 })
+                fetch('http://localhost:81/getChannels')
+         .then(response => response.json())
+         .then(response => set(Object.values(response)))
             }
             }> Submit</button>
                 </>

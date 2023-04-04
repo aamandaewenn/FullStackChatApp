@@ -7,6 +7,7 @@ let mysql = require('mysql');
 const app = express();
 const cors = require('cors');
 const bodyParser = require('body-parser');
+const bcrypt = require('bcrypt');
 
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(cors())
@@ -28,9 +29,21 @@ app.post('/init', (req, res) =>
       if (error) console.log(error);
   });
 
-  connection.query('CREATE DATABASE IF NOT EXISTS postsdb', function(error, result){
+  connection.query('CREATE DATABASE IF NOT EXISTS postdb', function(error, result){
     if (error) console.log(error);
   })
+
+  connection.query('CREATE DATABASE IF NOT EXISTS logindb', function(error, result){
+    if (error) console.log(error);
+  })
+
+  connection.query('USE logindb', function(error, result){
+    if (error) console.log(error);
+  })
+
+  connection.query(`CREATE TABLE IF NOT EXISTS users (id int unsigned NOT NULL auto_increment, username VARCHAR(25) NOT NULL, password VARCHAR(300) NOT NULL, admin boolean, PRIMARY KEY (id))`, function(error,result) {
+    if (error) console.log(error);})
+
 
   connection.query('USE channeldb', function(error, results)
 {
@@ -52,13 +65,6 @@ app.post('/createChannel', (req, res) =>
 {
   var name = req.body.name;
 
-  connection.query('USE postsdb', function (error, results)
-  {
-      if (error) console.log(error);
-  });
-
-  //connection.query(`CREATE TABLE IF NOT EXISTS ${name}, 
-  //( id int unsigned NOT NULL auto_increment, data VARCHAR(300) NOT NULL, replyTo int unsigned, PRIMARY KEY (id))`)
 
   connection.query('USE channeldb', function(error, results)
   {
@@ -76,7 +82,8 @@ app.post('/createChannel', (req, res) =>
 })
 
 // to list all the channels
-app.get('/getChannels', (req, res)=>{
+app.get('/getChannels', async (req, res)=>{
+  console.log('get channels called')
   connection.query('USE channeldb', function(error, results)
   {
       if (error) console.log(error);
@@ -196,6 +203,63 @@ app.post('/addPost', (req, res)=>
     });
 
   })
+
+  app.post('/register', (req, res)=>
+    {
+      console.log('adding new user')
+      var username = req.body.username;
+      var password=req.body.password;
+
+      console.log(username)
+
+      connection.query(`use logindb`, function(error, results)
+      {
+          if (error) console.log(error);
+      });
+
+      bcrypt.hash(password, 10).then((hash)=>{
+
+      connection.query(`INSERT INTO users (username, password, admin) VALUES ('${username}','${hash}', FALSE )`,function(error, results)
+      {
+          if (error) console.log(error);
+          res.json('user added');
+      });
+    });
+    })
+
+    app.post('/login', (req, res)=>{
+      console.log('login called')
+      console.log(req.body)
+      var password = req.body.password;
+      var username = req.body.username;
+      console.log(password)
+
+      connection.query(`use logindb`, function(error, results)
+      {
+          if (error) console.log(error);
+      });
+
+      var query = `SELECT * from users WHERE username='${username}' LIMIT 1`
+      connection.query(query, function(error, results)
+    {
+        if (error) console.log(error);
+        var user = results;
+        if (user[0] == undefined) res.json({error: 'User does not exist'});
+        else{
+          console.log(user[0])
+          //console.log(user[0].password)
+
+    bcrypt.compare(password, user[0].password).then((match) => {
+    if (!match) res.json({error: 'Password is inccorect for that username'})
+      
+    else{res.json('Login succesful');}
+    
+    });}
+
+    })
+
+    }
+ )
 
 
 
