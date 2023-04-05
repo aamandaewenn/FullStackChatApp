@@ -3,7 +3,7 @@ import {AddReply} from "./AddReply"
 import { Rating } from './Rating';
 import './Post.css';
 
-export const Post = ({id, data, channel_id, rating}) => {
+export const Post = ({id, data, channel_id, rating, username}) => {
     const [getReply, setReply] = useState([])
     //const [getRating, setRating] = useState(0)
 
@@ -22,13 +22,13 @@ function showReplies(set)
 
 return (
 <div className="post">
-<p>{data}</p>
+<p>{username}</p><p>{data}</p>
 <Rating rating={rating} id = {id}></Rating>
 <AddReply ch_id={channel_id} post_id={id}></AddReply>
 
 <div className = "reply">
 {getReply.map((post) => (
-      (<Post id={post.id} data={post.data} channel_id={post.channelid} rating={post.rating} />)
+      (<Post id={post.id} data={post.data} channel_id={post.channelid} rating={post.rating} username={post.username} key={post.id} />)
   ))}
   </div>
 </div>

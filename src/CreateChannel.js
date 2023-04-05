@@ -17,7 +17,7 @@ export const CreateChannel = ({set}) => {
                 <button onClick={(e) => {
                 fetch('http://localhost:81/createChannel', {
                     method: 'POST', body: `name=${getName}`,
-                    headers: { 'Content-type': 'application/x-www-form-urlencoded', 'accessToken':sessionStorage.getItem('accessToken') }
+                    headers: { 'Content-type': 'application/x-www-form-urlencoded', 'accessToken':localStorage.getItem('accessToken') }
                 })
                 fetch('http://localhost:81/getChannels')
          .then(response => response.json())

@@ -21,7 +21,7 @@ export const AddReply = ({ ch_id, post_id }) => {
             <button onClick={(e) => {
                 fetch('http://localhost:81/addReply', {
                     method: 'POST', body: `data=${getData}&channelID=${ch_id}&postID=${post_id}`,
-                    headers: { 'Content-type': 'application/x-www-form-urlencoded' }
+                    headers: { 'Content-type': 'application/x-www-form-urlencoded', 'accessToken':localStorage.getItem('accessToken') }
                 })
 
                     

@@ -10,11 +10,17 @@ import {Channel} from './Channel'
 import './App.css';
 import Registration from './Registration';
 import Login from './Login';
+import { AuthContext } from './helpers/AuthContext';
 
 function App() {
 const [getChannels, setChannels] = useState([]);
-const [getUserReg, setUserReg] = useState('');
-const [getPassReg, setPassReg] = useState('');
+// const [getUserReg, setUserReg] = useState('');
+// const [getPassReg, setPassReg] = useState('');
+const [getAuthState, setAuthState] = useState({
+  username: "",
+  id: 0,
+  status: false,
+});
 
 
 
@@ -23,10 +29,43 @@ if(getChannels.length <1) {
 .then(response => response.json()).then(response => setChannels(Object.values(response)))}
 
 
+useEffect(()=>
+{
+  fetch("http://localhost:81/createAdmin/", {
+      method: 'GET'
+      })
+},[])
+
   useEffect( (e)=>{
           showChannels()
 
   }, [getChannels.length])
+
+  useEffect(() => {
+    fetch("http://localhost:81/auth/", {
+        headers: {
+          accessToken: localStorage.getItem("accessToken")
+        }, method: 'GET'
+      })
+      .then(response => response.json()).then(
+        response =>{
+        if (response.error) {
+          setAuthState(false);
+        } else {
+          setAuthState({
+            username: response.username,
+            id: response.id,
+            status: true,
+          });
+        }
+      
+      })
+}, []);
+
+const logout = () => {
+  localStorage.removeItem("accessToken");
+  setAuthState({ username: "", id: 0, status: false });
+};
     
 function showChannels() {
 fetch('http://localhost:81/getChannels')
@@ -64,21 +103,30 @@ function goToChannel()
 // console.log(channels)
 // channels.map(c => console.log(c))
 
-const routeComponents = getChannels.map((channel) => <Route exact path={`channels/${channel.name}`} component={<Channel name={channel.name} id={channel.id}></Channel>} key={channel.id} />);
+//const routeComponents = getChannels.map((channel) => <Route exact path={`channels/${channel.name}`} component={<Channel name={channel.name} id={channel.id}></Channel>} key={channel.id} />);
 
   
   return (
     <div className="App">
       <header className="App-header">
 
-       {/*show this div when logged in*/}
-        <div id='channelList'>
+        <div className='channelList'>
+          <AuthContext.Provider value={{getAuthState, setAuthState}}>
           <Router>
+            {!getAuthState.status ? (
+              <>
+          <Link to='/login'>Login</Link><br></br><Link to='/registration'>Register</Link>
+          <br></br>
+          </>
+            )
+            :<div className="loggedInContainer">
+            <h1>{getAuthState.username} </h1>
+            {getAuthState.status && <button onClick={logout}> Logout</button>}
+          </div>
+            }
+
           {getChannels.map((channel) => {return (<Link key={channel.id} to={`/channels/${channel.name}`}>  <button>  {channel.name} </button> </Link>)})}
           <Link to='/createChannel'>  <button>  Create a New Channel </button>   </Link>
-          <Link to='/login'>Login</Link>
-          <Link to='/registration'>Register</Link>
-
           
 
          <Routes>
@@ -92,6 +140,7 @@ const routeComponents = getChannels.map((channel) => <Route exact path={`channel
             
           </Routes>
         </Router>
+        </AuthContext.Provider>
 
         </div>
 

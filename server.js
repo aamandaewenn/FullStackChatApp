@@ -25,7 +25,7 @@ app.get('/hello', (req, res) =>
     res.send('Hello World!')
   })
 
-app.post('/init', (req, res) =>
+app.post('/init', async (req, res) =>
   {
     connection.query('CREATE DATABASE IF NOT EXISTS channeldb', function (error,result){
       if (error) console.log(error);
@@ -63,7 +63,7 @@ connection.query(`CREATE TABLE IF NOT EXISTS channels
   })
 
 // to create a new channel
-app.post('/createChannel', validateToken, (req, res) =>
+app.post('/createChannel', validateToken, async (req, res) =>
 {
   var name = req.body.name;
 
@@ -97,11 +97,12 @@ app.get('/getChannels', async (req, res)=>{
     });
 })
 
-app.post('/addPost',validateToken, (req, res)=>
+app.post('/addPost',validateToken, async (req, res)=>
   {
     console.log('called addPost');
     var channel_id = req.body.channelID;
     var data = req.body.data;
+    var username = req.user.username;
 
     connection.query('USE postdb', function(error, results)
     {
@@ -109,18 +110,14 @@ app.post('/addPost',validateToken, (req, res)=>
     });
 
     // create a table for the channel for all posts
-    query =
-  connection.query(`CREATE TABLE IF NOT EXISTS posts ( id int unsigned NOT NULL auto_increment, data VARCHAR(300) NOT NULL, replyid int, channelid int NOT NULL, rating int, PRIMARY KEY (id))`,
+  connection.query(`CREATE TABLE IF NOT EXISTS posts ( id int unsigned NOT NULL auto_increment, data VARCHAR(300) NOT NULL, replyid int, channelid int NOT NULL, rating int, username VARCHAR(30) NOT NULL, PRIMARY KEY (id))`,
   function(error,result) {
     if (error) console.log(error);
   
   });
 
-  // later will have add reply method to create a table for the reply
 
-
-
-    var query = `INSERT INTO posts (data, channelid, rating) VALUES ('${data}', ${channel_id}, ${0})`;
+    var query = `INSERT INTO posts (data, channelid, rating, username) VALUES ('${data}', ${channel_id}, ${0}, '${username}')`;
     console.log('post added');
 
     connection.query(query, function(error, results)
@@ -131,7 +128,7 @@ app.post('/addPost',validateToken, (req, res)=>
     });
   });
 
-  app.get('/getPosts/:channelid', (req, res) =>
+  app.get('/getPosts/:channelid', async (req, res) =>
   {
       var channel_id = req.params.channelid
       connection.query('USE postdb', function(error, results)
@@ -146,12 +143,13 @@ app.post('/addPost',validateToken, (req, res)=>
 
   })
 
-  app.post('/addReply', validateToken, (req, res)=>
+  app.post('/addReply', validateToken, async (req, res)=>
   {
     console.log('called addReply');
     var channel_id = req.body.channelID;
     var data = req.body.data;
     var post_id = req.body.postID;
+    var username = req.user.username;
 
     connection.query('USE postdb', function(error, results)
     {
@@ -159,7 +157,7 @@ app.post('/addPost',validateToken, (req, res)=>
     });
 
 
-    var query = `INSERT INTO posts (data, channelid, replyid, rating) VALUES ('${data}', ${channel_id}, ${post_id}, ${0})`;
+    var query = `INSERT INTO posts (data, channelid, replyid, rating, username) VALUES ('${data}', ${channel_id}, ${post_id}, ${0}, '${username}')`;
     console.log('post added');
 
     connection.query(query, function(error, results)
@@ -170,7 +168,7 @@ app.post('/addPost',validateToken, (req, res)=>
     });
   });
 
-  app.get('/getReplies/:channelid/:postid', (req, res) =>
+  app.get('/getReplies/:channelid/:postid', async (req, res) =>
   {
       var channel_id = req.params.channelid
       var replyTo = req.params.postid
@@ -186,7 +184,7 @@ app.post('/addPost',validateToken, (req, res)=>
 
   })
 
-  app.post('/updateRating', validateToken, (req, res)=>
+  app.post('/updateRating', validateToken, async (req, res)=>
   {
     console.log('update rating called')
     var post_id = req.body.postID;
@@ -206,7 +204,7 @@ app.post('/addPost',validateToken, (req, res)=>
 
   })
 
-  app.post('/register', (req, res)=>
+  app.post('/register', async (req, res)=>
     {
       console.log('adding new user')
       var username = req.body.username;
@@ -229,7 +227,7 @@ app.post('/addPost',validateToken, (req, res)=>
     });
     })
 
-    app.post('/login', (req, res)=>{
+    app.post('/login', async (req, res)=>{
       console.log('login called')
       console.log(req.body)
       var password = req.body.password;
@@ -268,6 +266,28 @@ app.post('/addPost',validateToken, (req, res)=>
     }
  )
 
+ app.get("/auth", validateToken, (req, res) => {
+  res.json(req.user);
+});
+
+ app.get('/createAdmin', (req, res)=>
+ {
+  console.log('create admin occured')
+
+      bcrypt.hash('abc123', 10).then((hash)=>{
+        connection.query(`USE logindb`, function(error, results)
+      {
+          if (error) console.log(error);
+      });
+
+      connection.query(`INSERT INTO users (id, username, password, admin) VALUES ( ${1}, 'admin','${hash}', TRUE )`,function(error, results)
+      {
+          if (error) console.log(error);
+          res.json('admin added');
+      });
+    });
+ }
+ )
 
 
 app.listen(PORT, HOST);

@@ -1,10 +1,12 @@
-import React, { useState } from "react";
+import React, { useState, useContext } from "react";
 import {useNavigate} from "react-router-dom";
+import { AuthContext } from "./helpers/AuthContext";
 
 
 function Login() {
   const [getusername, setUsername] = useState("");
   const [getpassword, setPassword] = useState("");
+  const {setAuthState} = useContext(AuthContext)
 
   let navigate = useNavigate();
 
@@ -16,7 +18,8 @@ function Login() {
       response => {
       if (response.error) alert(response.error);
       else{
-        sessionStorage.setItem("accessToken", response);
+        localStorage.setItem("accessToken", response);
+        setAuthState(true);
         navigate('/');
       }})
     };

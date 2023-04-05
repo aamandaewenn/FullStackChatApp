@@ -9,10 +9,10 @@ export const Channel = ({name, id}) => {
 
     const [getPosts, setPosts] = useState([]);
 
-    useEffect( ()=>{{
+    useEffect( (e)=>{{
         return(showPosts())
 
-}})
+}},[getPosts.length])
   
 function showPosts() {
 fetch(`http://localhost:81/getPosts/${id}`,)

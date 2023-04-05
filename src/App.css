@@ -2,7 +2,17 @@
   text-align: center;
 }
 
-.channelList
+.App-header
 {
-  float:left;
+ 
+}
+
+.channelList{
+}
+
+  .loggedInContainer {
+  text-align: right;
+  margin-right: 10px;
+  color: rgb(40, 6, 37);
+  font-weight: lighter;
 }
