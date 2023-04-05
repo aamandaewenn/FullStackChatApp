@@ -22,7 +22,7 @@ export const AddPost = ({ ch_id }) => {
             <button onClick={(e) => {
                 fetch('http://localhost:81/addPost', {
                     method: 'POST', body: `data=${getData}&channelID=${ch_id}`,
-                    headers: { 'Content-type': 'application/x-www-form-urlencoded' }
+                    headers: { 'Content-type': 'application/x-www-form-urlencoded', 'accessToken':sessionStorage.getItem('accessToken') }
                 })
 
                     

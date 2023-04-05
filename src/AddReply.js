@@ -3,7 +3,6 @@ import { useState } from 'react';
 //import './AddPosts.css';
 
 export const AddReply = ({ ch_id, post_id }) => {
-    console.log(ch_id, post_id)
     const [getData, setData] = useState('');
     return (
         <>

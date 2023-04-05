@@ -4,7 +4,6 @@ import { Rating } from './Rating';
 import './Post.css';
 
 export const Post = ({id, data, channel_id, rating}) => {
-    console.log(id)
     const [getReply, setReply] = useState([])
     //const [getRating, setRating] = useState(0)
 

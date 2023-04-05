@@ -8,6 +8,8 @@ const app = express();
 const cors = require('cors');
 const bodyParser = require('body-parser');
 const bcrypt = require('bcrypt');
+const {sign} = require('jsonwebtoken');
+const {validateToken} = require('./middlewares/AuthMiddleware')
 
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(cors())
@@ -61,7 +63,7 @@ connection.query(`CREATE TABLE IF NOT EXISTS channels
   })
 
 // to create a new channel
-app.post('/createChannel', (req, res) =>
+app.post('/createChannel', validateToken, (req, res) =>
 {
   var name = req.body.name;
 
@@ -95,7 +97,7 @@ app.get('/getChannels', async (req, res)=>{
     });
 })
 
-app.post('/addPost', (req, res)=>
+app.post('/addPost',validateToken, (req, res)=>
   {
     console.log('called addPost');
     var channel_id = req.body.channelID;
@@ -144,7 +146,7 @@ app.post('/addPost', (req, res)=>
 
   })
 
-  app.post('/addReply', (req, res)=>
+  app.post('/addReply', validateToken, (req, res)=>
   {
     console.log('called addReply');
     var channel_id = req.body.channelID;
@@ -184,7 +186,7 @@ app.post('/addPost', (req, res)=>
 
   })
 
-  app.post('/updateRating', (req, res)=>
+  app.post('/updateRating', validateToken, (req, res)=>
   {
     console.log('update rating called')
     var post_id = req.body.postID;
@@ -251,8 +253,13 @@ app.post('/addPost', (req, res)=>
 
     bcrypt.compare(password, user[0].password).then((match) => {
     if (!match) res.json({error: 'Password is inccorect for that username'})
-      
-    else{res.json('Login succesful');}
+     
+    else{
+
+    const loginToken = sign({username: user[0].username, id: user[0].id
+    }, "amandassecretstring");
+    res.json(loginToken);
+    }
     
     });}
 

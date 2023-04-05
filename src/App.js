@@ -26,7 +26,7 @@ if(getChannels.length <1) {
   useEffect( (e)=>{
           showChannels()
 
-  }, [])
+  }, [getChannels.length])
     
 function showChannels() {
 fetch('http://localhost:81/getChannels')
