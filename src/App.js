@@ -1,6 +1,7 @@
 import React, { Component, useEffect } from 'react';
 import { BrowserRouter as Router, Routes, Route, Link } from 'react-router-dom';
 import {useState} from 'react';
+import { useNavigate } from 'react-router-dom';
 
 
 import {Landing} from './Landing';
@@ -11,8 +12,12 @@ import './App.css';
 import Registration from './Registration';
 import Login from './Login';
 import { AuthContext } from './helpers/AuthContext';
+import { ManageChannels } from './ManageChannels';
+
+
 
 function App() {
+const navigate = useNavigate;
 const [getChannels, setChannels] = useState([]);
 // const [getUserReg, setUserReg] = useState('');
 // const [getPassReg, setPassReg] = useState('');
@@ -24,9 +29,9 @@ const [getAuthState, setAuthState] = useState({
 
 
 
-if(getChannels.length <1) {
-  fetch('http://localhost:81/init', {method: 'POST',headers: {'Content-type': 'application/x-www-form-urlencoded'}})
-.then(response => response.json()).then(response => setChannels(Object.values(response)))}
+// if(getChannels.length <1) {
+//   fetch('http://localhost:81/init', {method: 'POST',headers: {'Content-type': 'application/x-www-form-urlencoded'}})
+// .then(response => response.json()).then(response => setChannels(Object.values(response)))}
 
 
 useEffect(()=>
@@ -34,6 +39,8 @@ useEffect(()=>
   fetch("http://localhost:81/createAdmin/", {
       method: 'GET'
       })
+      fetch('http://localhost:81/init', {method: 'POST',headers: {'Content-type': 'application/x-www-form-urlencoded'}})
+      .then(response => response.json()).then(response => setChannels(Object.values(response)))
 },[])
 
   useEffect( (e)=>{
@@ -65,6 +72,7 @@ useEffect(()=>
 const logout = () => {
   localStorage.removeItem("accessToken");
   setAuthState({ username: "", id: 0, status: false });
+  window.location.href = "/";
 };
     
 function showChannels() {
@@ -105,7 +113,7 @@ function goToChannel()
 
 //const routeComponents = getChannels.map((channel) => <Route exact path={`channels/${channel.name}`} component={<Channel name={channel.name} id={channel.id}></Channel>} key={channel.id} />);
 
-  
+  console.log(getAuthState);
   return (
     <div className="App">
       <header className="App-header">
@@ -125,6 +133,14 @@ function goToChannel()
           </div>
             }
 
+            {getAuthState.id == 1 && (
+              <div>
+              <Link to = '/manageChannels'>Manage Channels</Link>
+              <Link to = '/managePosts'>Manage Posts</Link>
+              <Link to = '/manageUsers'>Manage Users</Link>
+              </div>
+            )}
+
           {getChannels.map((channel) => {return (<Link key={channel.id} to={`/channels/${channel.name}`}>  <button>  {channel.name} </button> </Link>)})}
           <Link to='/createChannel'>  <button>  Create a New Channel </button>   </Link>
           
@@ -134,9 +150,11 @@ function goToChannel()
 
 
           <Route exact path='/' element={<Landing/>} />
-            <Route path='/createChannel' element={<CreateChannel set={setChannels}/>} />
+            <Route path='/createChannel' element={<CreateChannel get={getChannels}set={setChannels}/>} />
             <Route exact path='/registration' element={<Registration/>} />
             <Route exact path='/login' element={<Login/>} />
+            <Route exact path='/manageChannels' element={<ManageChannels getChannelList={getChannels} setChannelList={setChannels}></ManageChannels>}></Route>
+            
             
           </Routes>
         </Router>

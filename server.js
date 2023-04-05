@@ -63,7 +63,7 @@ connection.query(`CREATE TABLE IF NOT EXISTS channels
   })
 
 // to create a new channel
-app.post('/createChannel', validateToken, async (req, res) =>
+app.post('/createChannel', validateToken, (req, res) =>
 {
   var name = req.body.name;
 
@@ -84,7 +84,7 @@ app.post('/createChannel', validateToken, async (req, res) =>
 })
 
 // to list all the channels
-app.get('/getChannels', async (req, res)=>{
+app.get('/getChannels', (req, res)=>{
   console.log('get channels called')
   connection.query('USE channeldb', function(error, results)
   {
@@ -97,7 +97,7 @@ app.get('/getChannels', async (req, res)=>{
     });
 })
 
-app.post('/addPost',validateToken, async (req, res)=>
+app.post('/addPost',validateToken, (req, res)=>
   {
     console.log('called addPost');
     var channel_id = req.body.channelID;
@@ -128,7 +128,7 @@ app.post('/addPost',validateToken, async (req, res)=>
     });
   });
 
-  app.get('/getPosts/:channelid', async (req, res) =>
+  app.get('/getPosts/:channelid', (req, res) =>
   {
       var channel_id = req.params.channelid
       connection.query('USE postdb', function(error, results)
@@ -143,7 +143,7 @@ app.post('/addPost',validateToken, async (req, res)=>
 
   })
 
-  app.post('/addReply', validateToken, async (req, res)=>
+  app.post('/addReply', validateToken, (req, res)=>
   {
     console.log('called addReply');
     var channel_id = req.body.channelID;
@@ -168,7 +168,7 @@ app.post('/addPost',validateToken, async (req, res)=>
     });
   });
 
-  app.get('/getReplies/:channelid/:postid', async (req, res) =>
+  app.get('/getReplies/:channelid/:postid', (req, res) =>
   {
       var channel_id = req.params.channelid
       var replyTo = req.params.postid
@@ -204,7 +204,7 @@ app.post('/addPost',validateToken, async (req, res)=>
 
   })
 
-  app.post('/register', async (req, res)=>
+  app.post('/register', (req, res)=>
     {
       console.log('adding new user')
       var username = req.body.username;
@@ -227,7 +227,7 @@ app.post('/addPost',validateToken, async (req, res)=>
     });
     })
 
-    app.post('/login', async (req, res)=>{
+    app.post('/login', (req, res)=>{
       console.log('login called')
       console.log(req.body)
       var password = req.body.password;
@@ -288,6 +288,34 @@ app.post('/addPost',validateToken, async (req, res)=>
     });
  }
  )
+
+ app.delete('/deleteChannel', (req, res) => {
+  console.log('deleting channel')
+  var channel_id = req.body.id;
+  connection.query('USE channeldb', function(error, results)
+  {
+      if (error) console.log(error);
+  });
+
+  var query = `DELETE from channels WHERE id=${channel_id}`
+  connection.query(query, function(error, results)
+  {
+    if (error) console.log(error)
+    connection.query('USE postdb', function(error, results)
+  {
+      if (error) console.log(error);
+  });
+
+  var query = `DELETE from posts WHERE channelid=${channel_id}`
+  connection.query(query, function(error, results)
+  {
+    if (error) console.log(error)
+    res.send('channel deleted')
+    
+  });
+
+})
+})
 
 
 app.listen(PORT, HOST);

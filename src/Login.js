@@ -21,6 +21,7 @@ function Login() {
         localStorage.setItem("accessToken", response);
         setAuthState(true);
         navigate('/');
+        window.location.href = "/";
       }})
     };
 

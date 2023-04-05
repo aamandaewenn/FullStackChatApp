@@ -19,8 +19,8 @@ export const AddPost = ({ ch_id }) => {
                     onChange={e => setData(e.target.value)} />
             </div>
 
-            <button onClick={(e) => {
-                fetch('http://localhost:81/addPost', {
+            <button onClick={async (e) => {
+                await fetch('http://localhost:81/addPost', {
                     method: 'POST', body: `data=${getData}&channelID=${ch_id}`,
                     headers: { 'Content-type': 'application/x-www-form-urlencoded', 'accessToken':localStorage.getItem('accessToken') }
                 })
