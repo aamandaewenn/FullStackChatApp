@@ -21,15 +21,17 @@ export const Rating = ({rating, id}) => {
 
 return (
 <>
-<img className='thumbsdown' src={thumbs_down} onClick={(e) => {var new_rating = (rating - 1);
-                fetch('http://localhost:81/updateRating', {
+<img className='thumbsdown' src={thumbs_down} onClick={async (e) => {var new_rating = (rating - 1);
+                await fetch('http://localhost:81/updateRating', {
                     method: 'POST', body: `postID=${id}&rating=${new_rating}`,
-                    headers: { 'Content-type': 'application/x-www-form-urlencoded', 'accessToken':localStorage.getItem('accessToken') }})}}></img>
+                    headers: { 'Content-type': 'application/x-www-form-urlencoded', 'accessToken':localStorage.getItem('accessToken') }})
+                    }}></img>
 {rating}
-<img className = 'thumbsup' src={thumbs_up} onClick={(e) => {var new_rating = (rating + 1);
-                fetch('http://localhost:81/updateRating', {
+<img className = 'thumbsup' src={thumbs_up} onClick={async (e) => {var new_rating = (rating + 1);
+                await fetch('http://localhost:81/updateRating', {
                     method: 'POST', body: `postID=${id}&rating=${(new_rating)}`,
-                    headers: { 'Content-type': 'application/x-www-form-urlencoded', 'accessToken':localStorage.getItem('accessToken') }})}}></img>
+                    headers: { 'Content-type': 'application/x-www-form-urlencoded', 'accessToken':localStorage.getItem('accessToken') }})
+                    }}></img>
 </>
 );
 }

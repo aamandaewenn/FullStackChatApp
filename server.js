@@ -317,6 +317,45 @@ app.post('/addPost',validateToken, (req, res)=>
 })
 })
 
+app.get('/getAllPosts', (req, res) =>
+{
+  connection.query('USE postdb', function(error, results)
+  {
+      if (error) console.log(error);
+  });
+    const sql = `SELECT * FROM posts`;
+    connection.query(sql, function (err, result) {
+      if (err) throw err;
+      res.json(result);
+      });
+})
+
+app.delete('/deletePost', (req, res)=>{
+  // add the id to lista listb
+  var post_id = req.body.id
+
+
+  console.log('delete post called')
+  // for each item in listb
+  connection.query('USE postdb', function(error, results)
+  {
+      if (error) console.log(error);
+  });
+    var query = `DELETE from posts WHERE id=${post_id}`;
+    connection.query(query, function(error, results)
+    {
+        if (error) console.log(error);
+    })
+    query = `UPDATE posts SET replyid = NULL WHERE replyid = ${post_id}`
+    connection.query(query, function(error, results)
+  {
+    if (error) console.log(error)
+    
+  })
+res.send('posts deleted')}
+)
+
+
 
 app.listen(PORT, HOST);
 console.log('up and running');

@@ -23,7 +23,7 @@ function showReplies(set)
 return (
 <div className="post">
 <p>{username}</p><p>{data}</p>
-<Rating rating={rating} id = {id}></Rating>
+<Rating rating={rating} id = {id} ></Rating>
 <AddReply ch_id={channel_id} post_id={id}></AddReply>
 
 <div className = "reply">

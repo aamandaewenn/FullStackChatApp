@@ -13,6 +13,7 @@ import Registration from './Registration';
 import Login from './Login';
 import { AuthContext } from './helpers/AuthContext';
 import { ManageChannels } from './ManageChannels';
+import { ManagePosts } from './ManagePosts';
 
 
 
@@ -154,7 +155,7 @@ function goToChannel()
             <Route exact path='/registration' element={<Registration/>} />
             <Route exact path='/login' element={<Login/>} />
             <Route exact path='/manageChannels' element={<ManageChannels getChannelList={getChannels} setChannelList={setChannels}></ManageChannels>}></Route>
-            
+            <Route exact path='/managePosts' element={<ManagePosts/>}></Route>
             
           </Routes>
         </Router>

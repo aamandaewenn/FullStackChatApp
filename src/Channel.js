@@ -4,15 +4,16 @@ import {AddPost} from './AddPost'
 import { useEffect } from 'react';
 import { useState } from 'react';
 import { GetPosts } from './GetPosts';
+import {Post} from './Post';
 
 export const Channel = ({name, id}) => {
 
     const [getPosts, setPosts] = useState([]);
+ 
+useEffect( (e)=>{
+    showPosts()
 
-    useEffect( (e)=>{{
-        return(showPosts())
-
-}},[getPosts.length])
+}, [getPosts.length])
   
 function showPosts() {
 fetch(`http://localhost:81/getPosts/${id}`,)
@@ -25,7 +26,11 @@ fetch(`http://localhost:81/getPosts/${id}`,)
 return(
     <>
     <h3>{name}</h3>
-    <GetPosts get={getPosts}></GetPosts>
-    <AddPost ch_id={id}></AddPost>
+    {getPosts.map((post) => (
+    post.replyid == null
+      ? (<Post id={post.id} data={post.data} channel_id={post.channelid} rating={post.rating} username={post.username} key={post.id}/>)
+      : null
+  ))}
+    <AddPost ch_id={id} set={setPosts} get={getPosts}></AddPost>
     </>
 );}
