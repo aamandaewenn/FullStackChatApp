@@ -405,6 +405,26 @@ app.delete('/deleteUser', (req, res) =>
 res.send('posts deleted')}
 )
 
+app.get('/search/contains/:query', (req, res) =>{
+
+  var searchquery = req.params.query;
+
+  var mysql_query = `SELECT * FROM posts where data REGEXP '${searchquery}'`
+  connection.query('USE postdb', function(error, results)
+  {
+      if (error) console.log(error);
+  });
+  connection.query(mysql_query, function(error, results)
+  {
+      if (error) console.log(error);
+      var matches = []
+      results.forEach(element => {
+        matches.push(element.data)
+      });
+      res.send(matches)
+  })
+})
+
 
 
 app.listen(PORT, HOST);

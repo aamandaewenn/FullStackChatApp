@@ -116,7 +116,6 @@ function goToChannel()
 
 //const routeComponents = getChannels.map((channel) => <Route exact path={`channels/${channel.name}`} component={<Channel name={channel.name} id={channel.id}></Channel>} key={channel.id} />);
 
-  console.log(getAuthState);
   return (
     <div className="App">
       <header className="App-header">
@@ -129,7 +128,11 @@ function goToChannel()
   <option value="contains">contains:</option>
 </select><input type='text' onChange={(event) => {
           setSearchQuery(event.target.value)}}>
-            </input><button onClick={(e)=> {console.log(getSearchMethod); console.log(getSearchQuery)}}>
+            </input><button onClick={async (e)=> {await 
+              fetch(`http://localhost:81/search/${getSearchMethod}/${getSearchQuery}`)
+              .then(response => response.json())
+              .then(response => alert(response))}
+            }>
               Search</button>
         </div>)
 }
