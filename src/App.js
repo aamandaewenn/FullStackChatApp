@@ -14,14 +14,16 @@ import Login from './Login';
 import { AuthContext } from './helpers/AuthContext';
 import { ManageChannels } from './ManageChannels';
 import { ManagePosts } from './ManagePosts';
+import {ManageUsers} from './ManageUsers';
 
 
 
 function App() {
 const navigate = useNavigate;
+
+const [getSearchMethod, setSearchMethod] = useState('')
+const [getSearchQuery, setSearchQuery] = useState('')
 const [getChannels, setChannels] = useState([]);
-// const [getUserReg, setUserReg] = useState('');
-// const [getPassReg, setPassReg] = useState('');
 const [getAuthState, setAuthState] = useState({
   username: "",
   id: 0,
@@ -118,7 +120,19 @@ function goToChannel()
   return (
     <div className="App">
       <header className="App-header">
-
+      {getAuthState.status && (
+        <div className='searchbar'>
+        <select name="language" id="language" onChange={(event) => {
+          setSearchMethod(event.target.value)}}>
+  <option></option>
+  <option value="from">from:</option>
+  <option value="contains">contains:</option>
+</select><input type='text' onChange={(event) => {
+          setSearchQuery(event.target.value)}}>
+            </input><button onClick={(e)=> {console.log(getSearchMethod); console.log(getSearchQuery)}}>
+              Search</button>
+        </div>)
+}
         <div className='channelList'>
           <AuthContext.Provider value={{getAuthState, setAuthState}}>
           <Router>
@@ -156,7 +170,7 @@ function goToChannel()
             <Route exact path='/login' element={<Login/>} />
             <Route exact path='/manageChannels' element={<ManageChannels getChannelList={getChannels} setChannelList={setChannels}></ManageChannels>}></Route>
             <Route exact path='/managePosts' element={<ManagePosts/>}></Route>
-            
+            <Route exact path='/manageUsers' element={<ManageUsers/>}></Route>
           </Routes>
         </Router>
         </AuthContext.Provider>

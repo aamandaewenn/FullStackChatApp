@@ -355,6 +355,56 @@ app.delete('/deletePost', (req, res)=>{
 res.send('posts deleted')}
 )
 
+app.get('/getAllUsers', (req, res) =>
+{
+  connection.query('USE logindb', function(error, results)
+  {
+      if (error) console.log(error);
+  });
+    const sql = `SELECT id, username FROM users`;
+    connection.query(sql, function (err, result) {
+      if (err) throw err;
+      res.json(result);
+      });
+})
+
+app.delete('/deleteUser', (req, res) =>
+{
+  var userid = req.body.id;
+  var username = req.body.name;
+  connection.query('USE logindb', function(error, results)
+  {
+      if (error) console.log(error);
+  });
+  var query = `SELECT * from users WHERE id=${userid}`;
+  connection.query(query, function(error, results)
+  {
+      if (error) console.log(error);
+      var u_name = results[0].username;
+      
+      connection.query('USE postdb', function(error, results)
+  {
+      if (error) console.log(error);
+      var query = `UPDATE posts SET username = 'user-deleted' WHERE username='${u_name}'`
+  connection.query(query, function(error, results)
+  {
+      if (error) console.log(error);
+  })
+
+  });
+  })
+  connection.query('USE logindb', function(error, results)
+  {
+      if (error) console.log(error);
+  });
+  var query = `DELETE from users WHERE id=${userid}`;
+  connection.query(query, function(error, results)
+  {
+      if (error) console.log(error);
+  })
+res.send('posts deleted')}
+)
+
 
 
 app.listen(PORT, HOST);
